@@ -13,3 +13,4 @@ rootProject.name = "e-commerce-msa-kotlin"
 include("product-service")
 include("order-service")
 include("notification-service")
+include("api-gateway")
