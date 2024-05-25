@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  #  kotlinapp:
+  #    container_name: kotlinapp
+  #    build: # this is the build context: .
+  #      context: .
+  #      dockerfile: Dockerfile
+  #      args: # these are the arguments that are passed to the dockerfile
+  #        DB_URL: ${DB_URL}
+  #        PG_USER: ${PG_USER}
+  #        PG_PASSWORD: ${PG_PASSWORD}
+  #    ports: # port exposed to the host machine
+  #      - "8080:8080"
+  #    environment: # these are the environment variables that are passed to the dockerfile
+  #      DB_URL: jdbc:postgresql://db:5432/postgres
+  #      PG_USER: postgres
+  #      PG_PASSWORD: postgres
+  #    depends_on: # this is the dependency on the db service
+  #      - db
+
+  product-db:
+    container_name: product-db
+    image: postgres
+    environment: # environment variables for the Postgres container
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: products
+    ports: # port exposed to the host machine
+      - "5432:5432"
+    volumes: # volume used to persist data
+      - pgdata_product:/var/lib/postgresql/data
+
+  order-db:
+    container_name: order-db
+    image: postgres
+    environment: # environment variables for the Postgres container
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders
+    ports: # port exposed to the host machine
+      - "5433:5432"
+    volumes: # volume used to persist data
+      - pgdata_order:/var/lib/postgresql/data
+
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '2181:2181'
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - '9092:9092'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+volumes: # volume creation
+  pgdata_product: { }
+  pgdata_order: { }
