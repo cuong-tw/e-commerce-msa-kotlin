@@ -5,23 +5,18 @@ import lombok.*
 import org.jetbrains.annotations.NotNull
 
 @Entity
-@Builder
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-class Product {
+data class Product (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    var id: String = ""
+    val id: String = "",
 
     @Column
     @NotNull
-    var name: String = ""
+    var name: String = "",
 
     @Column
-    var price: Double = 0.0
+    var price: Double = 0.0,
 
     @Column
     var quantity: Int = 0
-}
+)
